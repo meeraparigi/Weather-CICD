@@ -1,1 +1,58 @@
+# Set up a pipeline
+name: Test and Build
 
+on:
+  push:
+    branches:
+    - master
+    paths:
+    - '**/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Setting up the environment
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Docker Setup
+      uses: docker/setup-buildx-action@v2
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install flake8
+
+    # Test the Code
+    - name: Run Linting Tests
+      run: |
+        flake8 --ignore=E501,F401 .
+
+    - name: Docker Credentials
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Docker Tag
+      id: version
+      run: |
+        VERSION=v$(date + "%Y%m%d%H%M%S")
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Build the Docker Image
+      run: |
+        docker build -t meeraparigi/weather-app:${{ env.VERSION }} .
+
+    # Push the Docker Image to Docker Hub
+    - name: Push the Docker Image
+      run: |
+        docker push meeraparigi/weather-app:${{ env.VERSION }}
