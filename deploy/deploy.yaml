@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: demo-app-deployment
+  name: weather-app-deployment
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: demo-app
+      app: weather-app
   template:
     metadata:
       labels:
-        app: demo-app
+        app: weather-app
     spec:
       containers:
-      - name: demo-app
-        image: 1nfosecsingh/demo-app:v20250105121337
+      - name: weather-app
+        image: meeraparigi/weather-app:v20250206104817
         ports:
         - containerPort: 5000
