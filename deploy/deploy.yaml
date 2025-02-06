@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: weather-app
-        image: meeraparigi/weather-app:v20250206112900
+        image: meeraparigi/weather-app:v20250206202401
         ports:
         - containerPort: 5000
